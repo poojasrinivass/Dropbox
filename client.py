@@ -14,6 +14,7 @@ while True:
 		command = raw_input("prompt=> ")
 	except KeyboardInterrupt:
 		print("Exit...")
+		client_socket.close()
 		sys.exit()
 	tokens = command.split()
 	if len(tokens) == 0:
@@ -22,6 +23,7 @@ while True:
 		print history
 		continue
 	if tokens[0] == "exit":
+		client_socket.close()
 		sys.exit()
 	history += tokens[0] + "\n"
 	
