@@ -62,62 +62,8 @@ def index(commands):
 		ext = ""
 		if(len(commands) == 5):
 			ext = extension(commands[-1])
-<<<<<<< HEAD
-=======
 
 		for file in file_list:
-			if ext == "" or file[-3:] == ext:
-				mtime = datetime.fromtimestamp(os.path.getmtime(file))
-				mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
-				# print(file, mtime)
-				if mtime >= start_time and mtime <= end_time:
-					res.append({
-						"name" : file,
-						"size" : os.path.getsize(file),
-						"timestamp" : mtime
-						})
-	else:
-		res.append({
-			"error" : "index : invalid flag"
-			})
-	# print("res")
-	# print(res)
-	client_socket.send(json.dumps(res))
-	return
-
-def filehash(commands):
-	res = []
->>>>>>> 5bb5559da6be1e966400446b6afcde8f4d0d4996
-
-	if len(commands) < 2:
-		res.append({
-			"error": "Not Enough Arguments!"
-			})
-		client_socket.send(json.dumps(res))
-		return
-
-	if commands[1] == "verify":
-		if len(commands) != 3:
-			res.append({
-				"error": "Improper Arguments passed!"
-				})
-		else:
-			file = commands[2]
-
-			if not os.path.isfile(file):
-				res.append({
-					"error" : "File does not exist!"
-					})
-			else:
-				res.append({
-					"name" : file,
-					"checksum" : md5(file),
-					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
-					})
-	elif commands[1] == "checkall":
-		file_list = os.listdir(".")
-		for file in file_list:
-<<<<<<< HEAD
 			if ext == "" or file[-3:] == ext:
 				mtime = datetime.fromtimestamp(os.path.getmtime(file))
 				mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
@@ -160,15 +106,64 @@ def filehash(commands):
 					"error" : "File does not exist!"
 					})
 			else:
-=======
-			if os.path.isfile(file):
->>>>>>> 5bb5559da6be1e966400446b6afcde8f4d0d4996
 				res.append({
 					"name" : file,
 					"checksum" : md5(file),
 					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
-<<<<<<< HEAD
 					})
+	elif commands[1] == "checkall":
+		file_list = os.listdir(".")
+		for file in file_list:
+
+			if ext == "" or file[-3:] == ext:
+				mtime = datetime.fromtimestamp(os.path.getmtime(file))
+				mtime = mtime.strftime('%Y-%m-%d %H:%M:%S')
+				# print(file, mtime)
+				if mtime >= start_time and mtime <= end_time:
+					res.append({
+						"name" : file,
+						"size" : os.path.getsize(file),
+						"timestamp" : mtime
+						})
+	else:
+		res.append({
+			"error" : "index : invalid flag"
+			})
+	# print("res")
+	# print(res)
+	client_socket.send(json.dumps(res))
+	return
+
+def filehash(commands):
+	res = []
+
+	if len(commands) < 2:
+		res.append({
+			"error": "Not Enough Arguments!"
+			})
+		client_socket.send(json.dumps(res))
+		return
+
+	if commands[1] == "verify":
+		if len(commands) != 3:
+			res.append({
+				"error": "Improper Arguments passed!"
+				})
+		else:
+			file = commands[2]
+
+			if not os.path.isfile(file):
+				res.append({
+					"error" : "File does not exist!"
+					})
+			else:
+				if os.path.isfile(file):
+
+					res.append({
+						"name" : file,
+						"checksum" : md5(file),
+						"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+						})
 	elif commands[1] == "checkall":
 		file_list = os.listdir(".")
 		for file in file_list:
@@ -177,8 +172,6 @@ def filehash(commands):
 					"name" : file,
 					"checksum" : md5(file),
 					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
-=======
->>>>>>> 5bb5559da6be1e966400446b6afcde8f4d0d4996
 					})
 	else:
 		res.append({
@@ -193,19 +186,15 @@ def download(commands):
 		res.append({
 			"error": "Not Enough Arguments!"
 			})
-	else:
-		if commands[1] == 
+	return
 
 def process(commands):
 	if commands[0] == "index":
 		index(commands)
 	elif commands[0] == "filehash":
 		filehash(commands)
-<<<<<<< HEAD
 	elif commands[0] == "download":
 		download(commands)
-=======
->>>>>>> 5bb5559da6be1e966400446b6afcde8f4d0d4996
 
 while True:
 	data = client_socket.recv(1024)
