@@ -36,20 +36,29 @@ def handle_output(client_socket, data, err=0):
 			print(it)
 	return
 
+<<<<<<< HEAD
 def handle_download_tcp(client_socket, command):
+=======
+def handle_download(client_socket, command):
+	client_socket.send(json.dumps("ACK"))
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 
 	f = open(command[2], 'wb')
 
 	while True:
 		packet = client_socket.recv(1024)
 		if not packet or (is_json(packet) and json.loads(packet) == "DONE"):
+<<<<<<< HEAD
 			print("File Downloaded")
+=======
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 			handle_output(client_socket, packet)
 			break
 		f.write(packet)
 	f.close()
 	return
 
+<<<<<<< HEAD
 def handle_download_udp(udp_socket, client_socket, command):
 	f = open(command[2], 'wb')
 
@@ -71,6 +80,8 @@ def handle_download_udp(udp_socket, client_socket, command):
 		handle_output(client_socket, data)
 	return
 
+=======
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 while True:
 	
 	try:
@@ -112,6 +123,7 @@ while True:
 		handle_output(client_socket, data)
 		
 	elif data == "DOWNLOAD":
+<<<<<<< HEAD
 		client_socket.send(json.dumps("ACK"))
 		if tokens[1] == "TCP":
 			handle_download_tcp(client_socket, tokens)
@@ -120,6 +132,9 @@ while True:
 			udp_socket.bind((HOST, UDP_PORT))
 
 			handle_download_udp(udp_socket, client_socket, tokens)
+=======
+		handle_download(client_socket, tokens)
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 	else:
 		print("Error Encountered!")
 		handle_output(client_socket, data, 1)

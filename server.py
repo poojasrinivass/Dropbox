@@ -3,7 +3,10 @@ import os
 import hashlib
 from datetime import datetime
 import json
+<<<<<<< HEAD
 import sys
+=======
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 
 HOST = "127.0.0.1"
 PORT = 65432
@@ -172,6 +175,7 @@ def filehash(commands):
 
 def download(commands):
 	res = []
+<<<<<<< HEAD
 	client_socket.send(json.dumps("DOWNLOAD"))
 	data = client_socket.recv(1024)
 	if not data:
@@ -198,6 +202,31 @@ def download(commands):
 				return
 			else:
 				data = client_socket.recv(1024)
+=======
+	if len(commands) < 3:
+		res.append({
+			"error": "Not Enough Arguments!"
+			})
+		client_socket.send(json.dumps(res))
+		return
+	elif commands[1] == "TCP":
+		file = commands[2]
+		if not os.path.isfile(file):
+			res.append({
+				"error" : "File does not exist!"
+				})
+			client_socket.send(json.dumps(res))
+			return
+		else:
+			client_socket.send(json.dumps("DOWNLOAD"))
+			data = client_socket.recv(1024)
+			if not data:
+				res.append({
+					"error" : "Connection broken!"
+					})
+			data = json.loads(data)
+			if data == "ACK":
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 				f = open(file, 'rb')
 				packet = f.read(1024)
 				while packet:
@@ -219,6 +248,7 @@ def download(commands):
 						"error" : "No acknowledgement received!"
 						})
 				client_socket.send(json.dumps(res))
+<<<<<<< HEAD
 		elif commands[1] == "UDP":
 			udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 			dest = (HOST, UDP_PORT)
@@ -259,6 +289,15 @@ def download(commands):
 						"error" : "No acknowledgement received!"
 						})
 					client_socket.send(json.dumps(res))
+=======
+			else:
+				res = []
+				res.append({
+					"error" : "Transmission not acknowledged!"
+					})
+				client_socket.send(json.dumps(res))
+	# elif commands[1] == "UDP":
+>>>>>>> 8f8644c1b763a83fe624fe460019f9853f1aeb72
 	return
 
 def process(commands):
