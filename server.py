@@ -155,10 +155,8 @@ def index(commands):
 	client_socket.send(json.dumps("OUTPUT"))
 	data = client_socket.recv(1024)
 	if not data:
-		res = []
-		res.append({
-			"error" : "Connection broken!"
-			})
+		print("Connection broken!")
+		return
 	data = json.loads(data)
 	if data == "ACK":
 		client_socket.send(json.dumps(res))
@@ -215,10 +213,8 @@ def filehash(commands):
 	client_socket.send(json.dumps("OUTPUT"))
 	data = client_socket.recv(1024)
 	if not data:
-		res = []
-		res.append({
-			"error" : "Connection broken!"
-			})
+		print("Connection broken!")
+		return
 	data = json.loads(data)
 	if data == "ACK":
 		client_socket.send(json.dumps(res))
@@ -332,6 +328,7 @@ def process(commands):
 while True:
 	data = client_socket.recv(1024)
 	if not data:
+		print("Disconnecting...")
 		break
 	data = json.loads(data)
 	if data == "ACK":
