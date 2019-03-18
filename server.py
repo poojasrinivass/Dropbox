@@ -324,6 +324,26 @@ def process(commands):
 		filehash(commands)
 	elif commands[0] == "download":
 		download(commands)
+	else:
+		res = []
+		res.append({
+			"Error" : "Invalid Command!"
+			})
+		client_socket.send(json.dumps("OUTPUT"))
+		data = client_socket.recv(1024)
+		if not data:
+			print("Connection broken!")
+			return
+		data = json.loads(data)
+		if data == "ACK":
+			client_socket.send(json.dumps(res))
+		else:
+			res = []
+			res.append({
+				"Error" : "No acknowledgement received!"
+				})
+			client_socket.send(json.dumps(res))
+	return
 
 while True:
 	data = client_socket.recv(1024)

@@ -91,7 +91,9 @@ while True:
 		client_socket.close()
 		sys.exit()
 	
-	history += tokens + "\n"
+	for it in tokens:
+		history += it + " "
+	history += "\n"
 	
 	client_socket.send(json.dumps(tokens))
 	data = client_socket.recv(1024)
