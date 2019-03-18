@@ -35,7 +35,7 @@ python client.py
 	- flag is "TCP" with args being file_name
 	- flag is "UDP" with args being file_name
 
-- See ![here](/problem_statement.pdf) for full description of commands.
+- See ![here](./problem_statement.pdf) for full description of commands.
 
 ## Implementation:
 
@@ -45,17 +45,17 @@ python client.py
 
 - A "handshake" has been implemented wherein server sends message "OUTPUT" or "DOWNLOAD" to relay type of command provided. Then client sends "ACK" to acknowledge this and handles commands on it's end. Server receives this "ACK" and then proceeds with it's task. File transfer is a special case. At the end of file transfer using TCP, a "DONE" is also send to signify end of transfer. This wouldn't have been necessary in case of non-persistent connection as socket could've simply been closed at the end of file transfer from server but in our case, we need to signify end of transfer in some manner and hence this system is used. File transfer using UDP employs a timeout to end connection.
 
-1. index
+### 1. index
 - Arguments are checked and required action is taken. Ex. Shortlist needs timestamps but not longlist.
 - Extensions (if any) are retreived and then files fitting extension (and contain keyword if needed) are collected.
 - Required fields of all these files are appended to a list and returned.
 
-2. filehash
+### 2. filehash
 - Arguments are checked and required action is taken. Ex. checkall needs no more args whereas verify needs file_name as well.
 - In case of checkall, all files are collected and required fields are returned.
 - In case of verify, file is searched for in current directory and if found, required fields are returned.
 
-3. download
+### 3. download
 - As mentioned earlier, initial handshake takes place.
 - server receives acknowledgement and proceeds with file transfer.
 - In case of TCP, file is found and sent using existing socket.
