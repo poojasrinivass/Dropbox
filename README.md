@@ -15,7 +15,7 @@ A client-server pipeline for file sharing and indexed searching.
 	- hashlib
 
 ## RUN:
--First run server and then, in another window, start client using:
+- First run server and then, in another window, start client using:
 
 ```bash
 python server.py
