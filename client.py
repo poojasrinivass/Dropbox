@@ -27,8 +27,6 @@ def handle_output(client_socket, data, err=0):
 
 	if not data:
 		print("No Data received!")
-		print("Exit...")
-		client_socket.close()
 		sys.exit()
 	else:
 		data = json.loads(data)
@@ -99,6 +97,7 @@ while True:
 	data = client_socket.recv(1024)
 	
 	if not data:
+		print("Error Encountered!")
 		print("No Data received!")
 		print("Exit...")
 		client_socket.close()
@@ -106,7 +105,7 @@ while True:
 		continue
 	
 	data = json.loads(data)
-	print(data)
+	# print(data)
 	
 	if data == "OUTPUT":
 		handle_output(client_socket, data)
