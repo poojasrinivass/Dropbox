@@ -31,9 +31,13 @@ while True:
 	data = client_socket.recv(1024)
 	if not data:
 		print("No Data received!")
+<<<<<<< HEAD
 		print("Exit...")
 		client_socket.close()
 		sys.exit()
+=======
+		continue
+>>>>>>> 5bb5559da6be1e966400446b6afcde8f4d0d4996
 	data = json.loads(data)
 	for it in data:
 		print(it)
