@@ -197,7 +197,6 @@ def download(commands):
 				client_socket.send(json.dumps(res))
 				return
 			else:
-				data = client_socket.recv(1024)
 				f = open(file, 'rb')
 				packet = f.read(1024)
 				while packet:
