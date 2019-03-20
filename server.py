@@ -14,21 +14,6 @@ server_socket.bind((HOST, PORT))
 server_socket.listen(5)
 client_socket, addr = server_socket.accept()
 
-months = {
-	"Jan" : 1,
-	"Feb" : 2,
-	"Mar" : 3,
-	"April" : 4,
-	"May" : 5,
-	"June" : 6,
-	"July" : 7,
-	"Aug" : 8,
-	"Sept" : 9,
-	"Oct" : 10,
-	"Nov" : 11,
-	"Dec" : 12
-}
-
 def is_json(myjson):
   try:
     json_object = json.loads(myjson)
@@ -38,15 +23,17 @@ def is_json(myjson):
 
 def get_date(date_string):
 
-	m = months[date_string[0]]
-	d = int(date_string[1])
-	y = int(date_string[-1])
+	date = date_string[0].split('-')
 
-	date_string = date_string[2].split(':')
+	d = int(date[0])
+	m = int(date[1])
+	y = int(date[-1])
 
-	H = int(date_string[0])
-	M = int(date_string[1])
-	S = int(date_string[2])
+	time = date_string[-1].split(':')
+
+	H = int(time[0])
+	M = int(time[1])
+	S = int(time[-1])
 
 
 	return datetime(y, m, d, H, M, S).strftime('%Y-%m-%d %H:%M:%S')
@@ -91,7 +78,7 @@ def index(commands):
 		file_list = []
 		if ext != "":
 			for file in os.listdir("."):
-				if file[-3:] == ext:
+				if file[-len(ext):] == ext:
 					if word == "":
 						file_list.append(file)
 					else:
@@ -110,18 +97,19 @@ def index(commands):
 				})
 	elif commands[1] == "shortlist":
 
-		if len(commands) < 10:
+		if len(commands) < 6:
 			res.append({
 				"error" : "Not Enough Arguments passed!"
 				})
 		else:
-			start_time = get_date(commands[2:6])
-			end_time = get_date(commands[6:10])
+			start_time = get_date(commands[2:4])
+			end_time = get_date(commands[4:6])
 			# print(start_time)
 			# print(end_time)
 			ext = ""
-			if(len(commands) > 10):
+			if(len(commands) > 6):
 				ext = extension(commands[-1])
+				# print("YOYO", ext)
 				if ext == "-1":
 					res = []
 					res.append({
@@ -132,7 +120,8 @@ def index(commands):
 			file_list = []
 			if ext != "":
 				for file in os.listdir("."):
-					if file[-3:] == ext:
+					# print(file, file[-len(ext):])
+					if file[-len(ext):] == ext:
 						file_list.append(file)
 			else:
 				file_list = os.listdir(".")

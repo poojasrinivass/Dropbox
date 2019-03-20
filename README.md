@@ -1,8 +1,8 @@
 # Communication Networks - Assignment
-A client-server pipeline for file sharing and indexed searching.
+- A client-server pipeline for file sharing and indexed searching.
 
-### Swapnil Pakhare - 20161199
-### Pooja Srinivas - 20171403
+#### Swapnil Pakhare - 20161199
+#### Pooja Srinivas - 20171403
 
 ## REQUIREMENTS:
 - To run this project, python version "2.7" is needed.
@@ -36,6 +36,64 @@ python client.py
 	- flag is "UDP" with args being file_name
 
 - See ![here](./problem_statement.pdf) for full description of commands.
+
+## Usage:
+
+#### 1. Index Longlist Examples:
+```bash
+prompt=> index longlist
+prompt=> index longlist *.pdf
+prompt=> index longlist *.pdf apples
+prompt=> index longlist *.txt programmer
+```
+Note:
+- Extensions have to be in the format - \*.extension.
+- Word at the end need to be without quotes.
+- Returns a list of files that adhere to arguments passed alongwith file_name, timestamp and file_size.
+
+#### 2. Index Shortlist Examples:
+```bash
+prompt=> index shortlist timestamp1 timestamp2
+prompt=> index shortlist timestamp1 timestamp2 *.pdf
+prompt=> index shortlist timestamp1 timestamp2 *.txt
+prompt=> index shortlist 19-03-2019 13:05:45 20-03-2019 00:00:00
+prompt=> index shortlist 19-03-2019 13:05:45 22-03-2019 13:59:05 *.py
+```
+
+Note:
+- timestamp has to be in the format - DD-MM-YYYY hh:mm:ss
+- Extensions have to be in the format - \*.extension.
+- Returns a list of files in current directory that adhere to arguments passed alongwith file_name, timestamp and file_size.
+
+#### 3. FileHash Checkall Examples:
+```bash
+prompt=> filehash checkall
+```
+Note:
+- Returns a list of all files in current directory alongwith checksum, file_name and timestamp.
+
+#### 4. FileHash Verify Examples:
+```bash
+prompt=> filehash verify file_name
+```
+Note:
+- Returns the name, checksum and timestamp of the file with name 'file_name' in current directory.
+
+#### 5. Download TCP Examples:
+```bash
+prompt=> download TCP file_name
+```
+
+Note:
+- Returns the file_name, checksum, timestamp and file_size of the file in current directory and also downloads the file from server to client using TCP.
+
+#### 6. Download UDP Examples:
+```bash
+prompt=> download UDP file_name
+```
+
+Note:
+- Returns the file_name, checksum, timestamp and file_size of the file in current directory and also downloads the file from server to client using UDP.
 
 ## Implementation:
 
