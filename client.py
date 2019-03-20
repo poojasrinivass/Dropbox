@@ -17,21 +17,19 @@ def is_json(myjson):
     return False
   return True
 
-def handle_output(client_socket, data, err=0):
-	if err == 1:
-		for it in data:
-			print(it)
-			return
+def handle_output(client_socket, data):
 	client_socket.send(json.dumps("ACK"))
 	data = client_socket.recv(1024)
 
 	if not data:
 		print("No Data received!")
+		client_socket.close()
 		sys.exit()
 	else:
 		data = json.loads(data)
 		for it in data:
-			print(it)
+			for tmp in it:
+				print(tmp + " " + it[tmp])
 	return
 
 def handle_download_tcp(client_socket, command):
@@ -74,7 +72,7 @@ while True:
 	try:
 		command = raw_input("prompt=> ")
 	except KeyboardInterrupt:
-		print("Exit...")
+		print("\nExit...")
 		client_socket.close()
 		sys.exit()
 	
@@ -109,7 +107,7 @@ while True:
 	data = json.loads(data)
 	# print(data)
 	
-	if data == "OUTPUT":
+	if data == "OUTPUT" or data == "ERR":
 		handle_output(client_socket, data)
 		
 	elif data == "DOWNLOAD":
@@ -123,5 +121,6 @@ while True:
 			handle_download_udp(udp_socket, client_socket, tokens)
 	else:
 		print("Error Encountered!")
-		handle_output(client_socket, data, 1)
+		for it in data:
+			print(it)
 		

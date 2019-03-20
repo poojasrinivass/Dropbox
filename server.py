@@ -8,6 +8,16 @@ import sys
 HOST = "127.0.0.1"
 PORT = 65432
 UDP_PORT = 9999
+help_msg = "Use command 'help' or refer to README.md for usage."
+usage = ("\n1. index longlist \n" +
+		 "2. index longlist *.ext \n" + 
+		 "3. index longlist *.ext word \n" +
+		 "4. index shortlist dd-mm-yyyy HH:MM:SS dd-mm-yyyy HH:MM:SS \n" + 
+		 "5. index shortlist dd-mm-yyyy HH:MM:SS dd-mm-yyyy HH:MM:SS *.ext \n" + 
+		 "6. filehash checkall \n" + 
+		 "7. filehash verify file_name \n" + 
+		 "8. download TCP file_name \n" + 
+		 "9. download UDP file_name\n")
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((HOST, PORT))
@@ -307,18 +317,106 @@ def download(commands):
 	return
 
 def process(commands):
+	res = []
 	if commands[0] == "index":
-		index(commands)
+		try:
+			index(commands)
+		except Exception as e:
+			print(str(e))
+			print(help_msg)
+			res.append({
+				"Error" : str(e),
+				"Tip-" : help_msg
+				})
+			client_socket.send(json.dumps("ERR"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Connection broken!")
+				return
+			data = json.loads(data)
+			if data == "ACK":
+				client_socket.send(json.dumps(res))
+			else:
+				res = []
+				res.append({
+					"Error" : "No acknowledgement received!"
+					})
+				client_socket.send(json.dumps(res))
+
 	elif commands[0] == "filehash":
-		filehash(commands)
+		try:
+			filehash(commands)
+		except e:
+			print(str(e))
+			print(help_msg)
+			res.append({
+				"Error" : str(e),
+				"Tip-" : help_msg
+				})
+			client_socket.send(json.dumps("ERR"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Connection broken!")
+				return
+			data = json.loads(data)
+			if data == "ACK":
+				client_socket.send(json.dumps(res))
+			else:
+				res = []
+				res.append({
+					"Error" : "No acknowledgement received!",
+					})
+				client_socket.send(json.dumps(res))
 	elif commands[0] == "download":
-		download(commands)
-	else:
-		res = []
-		res.append({
-			"Error" : "Invalid Command!"
-			})
+		try:
+			download(commands)
+		except e:
+			print(str(e))
+			print(help_msg)
+			res.append({
+				"Error" : str(e),
+				"Tip-" : help_msg
+				})
+			client_socket.send(json.dumps("ERR"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Connection broken!")
+				return
+			data = json.loads(data)
+			if data == "ACK":
+				client_socket.send(json.dumps(res))
+			else:
+				res = []
+				res.append({
+					"Error" : "No acknowledgement received!",
+					})
+				client_socket.send(json.dumps(res))
+	elif commands[0] == "help":
 		client_socket.send(json.dumps("OUTPUT"))
+		data = client_socket.recv(1024)
+		if not data:
+				print("Connection broken!")
+				return
+		data = json.loads(data)
+		if data == "ACK":
+			res = []
+			res.append({
+				"Usage" : usage
+				})
+			client_socket.send(json.dumps(res))
+		else:
+			res = []
+			res.append({
+				"Error" : "No acknowledgement received!",
+				})
+			client_socket.send(json.dumps(res))
+	else:
+		print("Invalid Command Entered!")
+		res.append({
+			"Error" : "Invalid Command!",
+			"Tip-" : help_msg
+			})
+		client_socket.send(json.dumps("ERR"))
 		data = client_socket.recv(1024)
 		if not data:
 			print("Connection broken!")
