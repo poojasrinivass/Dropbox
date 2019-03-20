@@ -101,15 +101,15 @@ def index(commands):
 			file_list = os.listdir(".")
 		for file in file_list:
 			res.append({
-				"name" : file,
-				"size" : os.path.getsize(file),
-				"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+				"Name: " : file,
+				"size: " : os.path.getsize(file),
+				"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 				})
 	elif commands[1] == "shortlist":
 
 		if len(commands) < 6:
 			res.append({
-				"error" : "Not Enough Arguments passed!"
+				"Error: " : "Not Enough Arguments passed!"
 				})
 		else:
 			start_time = get_date(commands[2:4])
@@ -123,7 +123,7 @@ def index(commands):
 				if ext == "-1":
 					res = []
 					res.append({
-						"Error" : "Invalid extension!"
+						"Error: " : "Invalid extension!"
 						})
 					client_socket.send(json.dumps(res))
 					return
@@ -141,7 +141,7 @@ def index(commands):
 				# print(file, mtime)
 				if mtime >= start_time and mtime <= end_time:
 					res.append({
-						"name" : file,
+						"Name: " : file,
 						"size" : os.path.getsize(file),
 						"timestamp" : mtime
 						})
@@ -172,41 +172,41 @@ def filehash(commands):
 
 	if len(commands) < 2:
 		res.append({
-			"error": "Not Enough Arguments!"
+			"Error: ": "Not Enough Arguments!"
 			})
 
 	elif commands[1] == "verify":
 		if len(commands) != 3:
 			res.append({
-				"error": "Improper Arguments passed!"
+				"Error: ": "Improper Arguments passed!"
 				})
 		else:
 			file = commands[2]
 
 			if not os.path.isfile(file):
 				res.append({
-					"error" : "File does not exist!"
+					"Error: " : "File does not exist!"
 					})
 			else:
 				if os.path.isfile(file):
 
 					res.append({
-						"name" : file,
-						"checksum" : md5(file),
-						"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+						"Name: " : file,
+						"checksum: " : md5(file),
+						"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 						})
 	elif commands[1] == "checkall":
 		file_list = os.listdir(".")
 		for file in file_list:
 			if os.path.isfile(file):
 				res.append({
-					"name" : file,
-					"checksum" : md5(file),
-					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+					"Name: " : file,
+					"checksum: " : md5(file),
+					"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 					})
 	else:
 		res.append({
-			"error" : "index : invalid flag"
+			"Error: " : "index : invalid flag"
 			})
 	
 	client_socket.send(json.dumps("OUTPUT"))
@@ -235,12 +235,12 @@ def download(commands):
 		return
 	elif is_json(data) and json.loads(data) != "ACK":
 		res.append({
-			"error" : "No acknowledgement received!"
+			"Error: " : "No acknowledgement received!"
 			})
 	else:
 		if len(commands) < 3:
 			res.append({
-				"error": "Not Enough Arguments!"
+				"Error: ": "Not Enough Arguments!"
 				})
 			client_socket.send(json.dumps(res))
 			return
@@ -248,7 +248,7 @@ def download(commands):
 			file = commands[2]
 			if not os.path.isfile(file):
 				res.append({
-					"error" : "File does not exist!"
+					"Error: " : "File does not exist!"
 					})
 				client_socket.send(json.dumps(res))
 				return
@@ -262,16 +262,16 @@ def download(commands):
 				f.close()
 				client_socket.send(json.dumps("DONE"))
 				res.append({
-					"name" : file,
-					"size" : os.path.getsize(file),
-					"checksum" : md5(file),
-					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+					"Name: " : file,
+					"size: " : os.path.getsize(file),
+					"checksum: " : md5(file),
+					"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 					})
 				data = client_socket.recv(1024)
 				if not data or json.loads(data) != "ACK":
 					res = []
 					res.append({
-						"error" : "No acknowledgement received!"
+						"Error: " : "No acknowledgement received!"
 						})
 				client_socket.send(json.dumps(res))
 		elif commands[1] == "UDP":
@@ -282,7 +282,7 @@ def download(commands):
 			file = commands[2]
 			if not os.path.isfile(file):
 				res.append({
-					"error" : "File does not exist!"
+					"Error: " : "File does not exist!"
 					})
 				udp_socket.sendto(res, dest)
 				return
@@ -296,10 +296,10 @@ def download(commands):
 				udp_socket.close()
 				f.close()
 				res.append({
-					"name" : file,
-					"size" : os.path.getsize(file),
-					"checksum" : md5(file),
-					"timestamp" : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
+					"Name: " : file,
+					"size: " : os.path.getsize(file),
+					"checksum: " : md5(file),
+					"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 					})
 				client_socket.send(json.dumps("DONE"))
 				data = client_socket.recv(1024)
@@ -311,7 +311,7 @@ def download(commands):
 				else:
 					res = []
 					res.append({
-						"error" : "No acknowledgement received!"
+						"Error: " : "No acknowledgement received!"
 						})
 					client_socket.send(json.dumps(res))
 	return
@@ -325,8 +325,8 @@ def process(commands):
 			print(str(e))
 			print(help_msg)
 			res.append({
-				"Error" : str(e),
-				"Tip-" : help_msg
+				"Error: " : str(e),
+				"Tip: " : help_msg
 				})
 			client_socket.send(json.dumps("ERR"))
 			data = client_socket.recv(1024)
@@ -339,7 +339,7 @@ def process(commands):
 			else:
 				res = []
 				res.append({
-					"Error" : "No acknowledgement received!"
+					"Error: " : "No acknowledgement received!"
 					})
 				client_socket.send(json.dumps(res))
 
@@ -350,8 +350,8 @@ def process(commands):
 			print(str(e))
 			print(help_msg)
 			res.append({
-				"Error" : str(e),
-				"Tip-" : help_msg
+				"Error: " : str(e),
+				"Tip: " : help_msg
 				})
 			client_socket.send(json.dumps("ERR"))
 			data = client_socket.recv(1024)
@@ -364,7 +364,7 @@ def process(commands):
 			else:
 				res = []
 				res.append({
-					"Error" : "No acknowledgement received!",
+					"Error: " : "No acknowledgement received!",
 					})
 				client_socket.send(json.dumps(res))
 	elif commands[0] == "download":
@@ -374,8 +374,8 @@ def process(commands):
 			print(str(e))
 			print(help_msg)
 			res.append({
-				"Error" : str(e),
-				"Tip-" : help_msg
+				"Error: " : str(e),
+				"Tip: " : help_msg
 				})
 			client_socket.send(json.dumps("ERR"))
 			data = client_socket.recv(1024)
@@ -388,7 +388,7 @@ def process(commands):
 			else:
 				res = []
 				res.append({
-					"Error" : "No acknowledgement received!",
+					"Error: " : "No acknowledgement received!",
 					})
 				client_socket.send(json.dumps(res))
 	elif commands[0] == "help":
@@ -401,20 +401,20 @@ def process(commands):
 		if data == "ACK":
 			res = []
 			res.append({
-				"Usage" : usage
+				"Usage: " : usage
 				})
 			client_socket.send(json.dumps(res))
 		else:
 			res = []
 			res.append({
-				"Error" : "No acknowledgement received!",
+				"Error: " : "No acknowledgement received!",
 				})
 			client_socket.send(json.dumps(res))
 	else:
 		print("Invalid Command Entered!")
 		res.append({
-			"Error" : "Invalid Command!",
-			"Tip-" : help_msg
+			"Error: " : "Invalid Command!",
+			"Tip: " : help_msg
 			})
 		client_socket.send(json.dumps("ERR"))
 		data = client_socket.recv(1024)
@@ -427,7 +427,7 @@ def process(commands):
 		else:
 			res = []
 			res.append({
-				"Error" : "No acknowledgement received!"
+				"Error: " : "No acknowledgement received!"
 				})
 			client_socket.send(json.dumps(res))
 	return

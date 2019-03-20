@@ -27,9 +27,10 @@ def handle_output(client_socket, data):
 		sys.exit()
 	else:
 		data = json.loads(data)
-		for it in data:
-			for tmp in it:
-				print(tmp + " " + it[tmp])
+		for it in range(len(data)):
+			print(it + 1)
+			for tmp in data[it]:
+				print(tmp + " " + str(data[it][tmp]))
 	return
 
 def handle_download_tcp(client_socket, command):
