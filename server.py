@@ -83,6 +83,16 @@ def index(commands):
 				res.append({
 					"Error" : "Invalid extension!"
 					})
+				client_socket.send(json.dumps("OUTPUT"))
+				data = client_socket.recv(1024)
+				if not data:
+					print("Error: Connection broken!")
+					return
+				if not is_json(data) or json.loads(data) != "ACK":
+					res = []
+					res.append({
+						"Error: " : "No acknowledgement received!"
+						})
 				client_socket.send(json.dumps(res))
 				return
 		file_list = []
@@ -97,8 +107,10 @@ def index(commands):
 								for line in f:
 									if word in line:
 										file_list.append(file)
+										break
 		else:
 			file_list = os.listdir(".")
+		# print(file_list)
 		for file in file_list:
 			res.append({
 				"Name: " : file,
@@ -125,6 +137,16 @@ def index(commands):
 					res.append({
 						"Error: " : "Invalid extension!"
 						})
+					client_socket.send(json.dumps("OUTPUT"))
+					data = client_socket.recv(1024)
+					if not data:
+						print("Error: Connection broken!")
+						return
+					if not is_json(data) or json.loads(data) != "ACK":
+						res = []
+						res.append({
+							"Error: " : "No acknowledgement received!"
+							})
 					client_socket.send(json.dumps(res))
 					return
 			file_list = []
@@ -147,7 +169,7 @@ def index(commands):
 						})
 	else:
 		res.append({
-			"error" : "index : invalid flag"
+			"Error" : "index : invalid flag"
 			})
 	# print("res")
 	# print(res)
@@ -162,7 +184,7 @@ def index(commands):
 	else:
 		res = []
 		res.append({
-			"Transmission not acknowledged!"
+			"Error": "Transmission not acknowledged!"
 			})
 		client_socket.send(json.dumps(res))
 	return
@@ -228,30 +250,45 @@ def filehash(commands):
 
 def download(commands):
 	res = []
-	client_socket.send(json.dumps("DOWNLOAD"))
-	data = client_socket.recv(1024)
-	if not data:
-		print("Error : Connection broken!")
-		return
-	elif is_json(data) and json.loads(data) != "ACK":
+	if len(commands) < 3:
 		res.append({
-			"Error: " : "No acknowledgement received!"
+			"Error: ": "Not Enough Arguments!"
 			})
-	else:
-		if len(commands) < 3:
+		client_socket.send(json.dumps("OUTPUT"))
+		data = client_socket.recv(1024)
+		if not data:
+			print("Error: Connection broken!")
+			return
+		if not is_json(data) or json.loads(data) != "ACK":
+			res = []
 			res.append({
-				"Error: ": "Not Enough Arguments!"
+				"Error: " : "No acknowledgement received!"
 				})
+		client_socket.send(json.dumps(res))
+		return
+	elif commands[1] == "TCP":
+		file = commands[2]
+		if not os.path.isfile(file):
+			res.append({
+				"Error: " : "File does not exist!"
+				})
+			client_socket.send(json.dumps("OUTPUT"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Error: Connection broken!")
+				return
+			if not is_json(data) or json.loads(data) != "ACK":
+				res = []
+				res.append({
+					"Error: " : "No acknowledgement received!"
+					})
 			client_socket.send(json.dumps(res))
 			return
-		elif commands[1] == "TCP":
-			file = commands[2]
-			if not os.path.isfile(file):
-				res.append({
-					"Error: " : "File does not exist!"
-					})
-				client_socket.send(json.dumps(res))
-				return
+		else:
+			client_socket.send(json.dumps("DOWNLOAD"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Error: Connection broken!")
 			else:
 				f = open(file, 'rb')
 				packet = f.read(1024)
@@ -274,18 +311,33 @@ def download(commands):
 						"Error: " : "No acknowledgement received!"
 						})
 				client_socket.send(json.dumps(res))
-		elif commands[1] == "UDP":
-			udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-			dest = (HOST, UDP_PORT)
+	elif commands[1] == "UDP":
+		udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		dest = (HOST, UDP_PORT)
 
-			res = []
-			file = commands[2]
-			if not os.path.isfile(file):
-				res.append({
-					"Error: " : "File does not exist!"
-					})
-				udp_socket.sendto(res, dest)
+		res = []
+		file = commands[2]
+		if not os.path.isfile(file):
+			res.append({
+				"Error: " : "File does not exist!"
+				})
+			client_socket.send(json.dumps("OUTPUT"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Error: Connection broken!")
 				return
+			if not is_json(data) or json.loads(data) != "ACK":
+				res = []
+				res.append({
+					"Error: " : "No acknowledgement received!"
+					})
+			client_socket.send(json.dumps(res))
+			return
+		else:
+			client_socket.send(json.dumps("DOWNLOAD"))
+			data = client_socket.recv(1024)
+			if not data:
+				print("Error: Connection broken!")
 			else:
 				f = open(file, 'rb')
 				packet = f.read(1024)
@@ -293,6 +345,7 @@ def download(commands):
 					print("Sending..")
 					udp_socket.sendto(packet, dest)
 					packet = f.read(1024)
+				# udp_socket.sendto(json.dumps("DONE"), dest)
 				udp_socket.close()
 				f.close()
 				res.append({
@@ -301,19 +354,33 @@ def download(commands):
 					"checksum: " : md5(file),
 					"timestamp: " : datetime.fromtimestamp(os.path.getmtime(file)).strftime('%Y-%m-%d %H:%M:%S')
 					})
-				client_socket.send(json.dumps("DONE"))
 				data = client_socket.recv(1024)
-				if not data:
-					print("Error : Connection broken!")
-					return
-				elif is_json(data) and json.loads(data) == "ACK":
-					client_socket.send(json.dumps(res))
-				else:
+				if not data or json.loads(data) != "ACK":
 					res = []
 					res.append({
 						"Error: " : "No acknowledgement received!"
 						})
-					client_socket.send(json.dumps(res))
+				client_socket.send(json.dumps(res))
+	else:
+		res = []
+		res.append({
+			"Error: " : "Invalid flag!"
+			})
+		client_socket.send(json.dumps("OUTPUT"))
+		data = client_socket.recv(1024)
+		if not data:
+			print("Connection broken!")
+			return
+		data = json.loads(data)
+		if data == "ACK":
+			client_socket.send(json.dumps(res))
+		else:
+			res = []
+			res.append({
+				"Error": "Transmission not acknowledged!"
+				})
+			client_socket.send(json.dumps(res))
+
 	return
 
 def process(commands):
@@ -346,7 +413,7 @@ def process(commands):
 	elif commands[0] == "filehash":
 		try:
 			filehash(commands)
-		except e:
+		except Exception as e:
 			print(str(e))
 			print(help_msg)
 			res.append({
@@ -370,7 +437,7 @@ def process(commands):
 	elif commands[0] == "download":
 		try:
 			download(commands)
-		except e:
+		except Exception as e:
 			print(str(e))
 			print(help_msg)
 			res.append({

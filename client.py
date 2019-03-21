@@ -52,20 +52,15 @@ def handle_download_udp(udp_socket, client_socket, command):
 
 	data, addr = udp_socket.recvfrom(1024)
 	try:
-		while(data):
-			print("Receiving...")
-			f.write(data)
-			udp_socket.settimeout(2)
-			data, addr = udp_socket.recvfrom(1024)
-	except socket.timeout:
-		f.close()
-		udp_socket.close()
-	data = client_socket.recv(1024)
-	if not data:
-		print("Error : No acknowledgement received!")
-	elif is_json(data) and json.loads(data) == "DONE":
-		print("File Downloaded")
-		handle_output(client_socket, data)
+	    while(data):
+	        f.write(data)
+	        udp_socket.settimeout(2)
+	        data,addr = udp_socket.recvfrom(buf)
+	except timeout:
+	    f.close()
+	    udp_socket.close()
+	    print "File Downloaded"
+	    handle_output(client_socket, data)
 	return
 
 while True:
@@ -124,4 +119,3 @@ while True:
 		print("Error Encountered!")
 		for it in data:
 			print(it)
-		
